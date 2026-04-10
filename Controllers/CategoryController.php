@@ -17,6 +17,7 @@ class CategoryController {
     }
 
     // GET /categories — Display all categories
+    
     public function index() {
         $this->requireAuth();
 
