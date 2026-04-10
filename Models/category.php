@@ -12,6 +12,19 @@ class category {
         $this->pdo = $db->getPDO();
     }
 
+    public function create(){
+        try{
+            $stmt = $this->pdo->prepare('INSERT INTO category (name) VALUES (:name)');
+            $stmt->bindParam(':name', $this->name);
+            $stmt->execute();
+            return true ;
+
+        }catch(PDOException $e){
+            echo 'Erreur : ' . $e->getMessage();
+
+        }
+
+    }
     public function geAll(){
         try{
             $stmt = $this->pdo->prepare('SELECT * FROM category');
