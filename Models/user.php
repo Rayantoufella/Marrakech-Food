@@ -63,6 +63,7 @@ class user {
             $stmt->bindParam(':name', $this->name);
             $stmt->bindParam(':email', $this->email);
             $stmt->bindParam(':password', $this->password);
+            $stmt->execute();
 
         }catch(PDOException $e){
             echo 'Erreur : ' . $e->getMessage();
@@ -93,8 +94,8 @@ class user {
         }
     }
 
-    public function hashingPassword($password){
+    /*public function hashingPassword($password){
         return password_hash($password, PASSWORD_DEFAULT);
-    }
+    }*/
 
 }
