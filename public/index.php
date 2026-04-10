@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-=======
-
-
-
-
 <?php
 
 session_start();
@@ -105,4 +99,5 @@ switch ($action) {
         $authController->showLoginForm();
         break;
 }
->>>>>>> 94c5b4327bf59d21f04a7d160f2f35dc0c9534f1
+
+

@@ -1,5 +1,55 @@
 <?php
-// Logique PHP à traiter par l'utilisateur
+session_start();
+
+// Inclure les modèles
+require_once __DIR__ . '/../../Models/DB.php';
+require_once __DIR__ . '/../../Models/user.php';
+
+$error = '';
+$success = '';
+
+// Vérifier si le formulaire est soumis
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+
+    // Validation
+    if (empty($email)) {
+        $error = 'L\'adresse email est requise.';
+    } elseif (empty($password)) {
+        $error = 'Le mot de passe est requis.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = 'L\'adresse email n\'est pas valide.';
+    } else {
+        // Connexion à la base de données
+        $db = new DB("localhost", "marrakech_food", "root", "");
+        $pdo = $db->getPDO();
+
+        try {
+            // Rechercher l'utilisateur par email
+            $stmt = $pdo->prepare('SELECT id, name, email, password FROM user WHERE email = :email');
+            $stmt->bindParam(':email', $email);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Vérifier le mot de passe
+            if ($user && password_verify($password, $user['password'])) {
+                // Créer la session
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_name'] = $user['name'];
+                $_SESSION['user_email'] = $user['email'];
+
+                // Rediriger vers le tableau de bord
+                header('Location: /Marrakech_Food/Views/category/index.php');
+                exit();
+            } else {
+                $error = 'Email ou mot de passe incorrect.';
+            }
+        } catch (PDOException $e) {
+            $error = 'Erreur de connexion à la base de données.';
+        }
+    }
+}
 ?>
 
 <!doctype html>
@@ -599,6 +649,33 @@
         .left-panel__content {
             animation: slideUp .7s .2s cubic-bezier(.4,0,.2,1) both;
         }
+
+        /* Alert messages */
+        .alert-error {
+            background: #FEE2E2;
+            border: 1px solid #FECACA;
+            color: #991B1B;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background: #DCFCE7;
+            border: 1px solid #BBF7D0;
+            color: #166534;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
@@ -652,8 +729,23 @@
                 <p class="form-header__sub">Retrouvez votre espace culinaire personnel</p>
             </div>
 
+            <!-- Affichage des erreurs/succès -->
+            <?php if (!empty($error)): ?>
+                <div style="background: #FEE2E2; border: 1px solid #FECACA; color: #991B1B; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <?php echo htmlspecialchars($error); ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($success)): ?>
+                <div style="background: #DCFCE7; border: 1px solid #BBF7D0; color: #166534; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-check-circle"></i>
+                    <?php echo htmlspecialchars($success); ?>
+                </div>
+            <?php endif; ?>
+
             <!-- Login Form -->
-            <form id="login-form" action="../public/index.php?action=login_submit" method="POST" novalidate>
+            <form id="login-form" action="login.php" method="POST" novalidate>
 
                 <!-- Email -->
                 <div class="form-group">
@@ -729,6 +821,47 @@
     </div><!-- /.right-panel -->
 
 </div><!-- /.page-wrapper -->
+
+<script>
+    // Toggle password visibility
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const input = this.closest('.input-wrapper').querySelector('input');
+            const icon = this.querySelector('i');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
+
+    // Form validation
+    document.getElementById('login-form')?.addEventListener('submit', function(e) {
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (!email) {
+            e.preventDefault();
+            alert('Veuillez entrer votre adresse email.');
+            document.getElementById('email').focus();
+            return false;
+        }
+
+        if (!password) {
+            e.preventDefault();
+            alert('Veuillez entrer votre mot de passe.');
+            document.getElementById('password').focus();
+            return false;
+        }
+    });
+</script>
 
 </body>
 </html>
