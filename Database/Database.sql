@@ -20,9 +20,18 @@ create table recette (
                          id int auto_increment primary key ,
                          name varchar(255) not null,
                          description text not null,
+                         image varchar(255) null,
                          user_id int not null ,
                          foreign key (user_id) references user(id) ,
                          category_id int not null ,
                          foreign key (category_id) references category(id)   ,
                          created_at timestamp default current_timestamp
 ) ;
+
+insert into category (name) value ('Tajine') ,
+('Salade') ,
+('Couscous') ,
+('Jus') ;
+
+
+
