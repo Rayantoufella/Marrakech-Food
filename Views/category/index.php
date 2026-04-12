@@ -136,6 +136,7 @@ foreach ($categories as $cat) {
         .dashboard-wrapper {
             display: flex;
             min-height: 100vh;
+            gap: 0;
         }
 
         /* ── SIDEBAR ── */
@@ -340,12 +341,14 @@ foreach ($categories as $cat) {
             flex: 1;
             display: flex;
             flex-direction: column;
+            background: var(--clr-bg);
         }
 
         /* ── TOP HEADER ── */
         .top-header {
             background: var(--clr-surface);
             border-bottom: 1px solid var(--clr-border);
+            border-left: 1px solid var(--clr-border);
             padding: 20px 32px;
             display: flex;
             align-items: center;
@@ -488,6 +491,11 @@ foreach ($categories as $cat) {
             padding: 32px;
             display: flex;
             flex-direction: column;
+            background: var(--clr-bg);
+        }
+
+        main > section:first-child {
+            margin-top: 0;
         }
 
         /* ══════════════════════════════════════════
@@ -995,14 +1003,14 @@ foreach ($categories as $cat) {
                     </a>
                 </li>
                 <li class="sidebar-nav__item">
-                    <a href="#" class="sidebar-nav__link">
+                    <a href="../recette/show.php" class="sidebar-nav__link">
                         <span class="sidebar-nav__icon"><i class="fas fa-book"></i></span>
                         <span>Mes recettes</span>
                         <span class="sidebar-nav__badge"><?php echo $totalRecettes; ?></span>
                     </a>
                 </li>
                 <li class="sidebar-nav__item">
-                    <a href="#" class="sidebar-nav__link">
+                    <a href="../recette/create.php" class="sidebar-nav__link">
                         <span class="sidebar-nav__icon"><i class="fas fa-plus"></i></span>
                         <span>Ajouter une recette</span>
                     </a>
@@ -1090,6 +1098,7 @@ foreach ($categories as $cat) {
         </header>
 
         <!-- Main content area -->
+        <main>
         <section class="stats-grid">
             <!-- Card 1: Total Recipes -->
             <div class="stat-card">
